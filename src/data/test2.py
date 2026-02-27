@@ -1,5 +1,5 @@
 DATA = {
   "name": "test",
-  "description": "test",
+  "description": "Hello World",
   "uri": "https://bilibili.com"
 }
