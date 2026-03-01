@@ -550,14 +550,14 @@ jobs:
                 await github.rest.issues.addLabels({ owner, repo, issue_number: pull_number, labels: ['所有权已验证'] })
                 await github.rest.issues.createComment({
                   owner, repo, issue_number: pull_number,
-                  body: '## ✅ 网站所有权验证通过\n\n已在您的 `fallback_uri` 页面中发现指定链接，将自动合并 PR。'
+                  body: '## 网站所有权验证通过\n\n已在您的 `fallback_uri` 页面中发现指定链接，将自动合并 PR。'
                 })
                 core.info('所有权验证通过')
               } else {
                 await github.rest.issues.createComment({
                   owner, repo, issue_number: pull_number,
                   body: [
-                    '## ❌ 未能验证网站所有权',
+                    '## 未能验证网站所有权',
                     '',
                     failReason,
                     '',
@@ -578,20 +578,20 @@ jobs:
                   const { ok, html, httpCode } = await fetchPage(fallbackUri)
                   core.info(`[源码] ${fallbackUri}\n${html}`)
                   if (!ok) {
-                    currentStatus = `> **当前检测状态**：⚠️ 无法访问 \`${fallbackUri}\`，请确认页面可正常访问。`
+                    currentStatus = `> **当前检测状态**：Warning: 无法访问 \`${fallbackUri}\`，请确认页面可正常访问。`
                   } else {
                     const found = OWNERSHIP_LINKS.find(link => html.includes(link))
                     const codeStr = httpCode ? ` (HTTP ${httpCode})` : ''
                     currentStatus = found
-                      ? `> **当前检测状态**：✅ 已在 \`${fallbackUri}\` 检测到链接 \`${found}\`${codeStr}，可直接回复 \`准备完毕\` 触发验证。`
-                      : `> **当前检测状态**：❌ 已检测 \`${fallbackUri}\`${codeStr}，页面中尚未发现指定链接，请添加后回复 \`准备完毕\`。\n> 可能是页面触发了Javascript质询。`
+                      ? `> **当前检测状态**：已在 \`${fallbackUri}\` 检测到链接 \`${found}\`${codeStr}，可直接回复 \`准备完毕\` 触发验证。`
+                      : `> **当前检测状态**：已检测 \`${fallbackUri}\`${codeStr}，页面中尚未发现指定链接，请添加后回复 \`准备完毕\`。\n> 可能是页面触发了Javascript质询，请手动关闭该页面的Javascript质询。`
                   }
                   break
                 }
               }
 
               const bodyLines = [
-                '## 🔍 需要验证网站所有权',
+                '## Info: 需要验证网站所有权',
                 '',
                 '请在您 `DATA` 中 `fallback_uri` 所指向的页面（如友链页、关于页）中添加以下**任意一个**链接：',
                 '',
@@ -687,13 +687,13 @@ jobs:
               })
               await github.rest.issues.createComment({
                 owner, repo, issue_number: pull_number,
-                body: `## 🎉 友链申请合并成功！\n\n恭喜！**${siteName}** 的友链申请已合并，稍后将在网站显示。感谢您的贡献！`
+                body: `## 友链申请合并成功！\n\n**${siteName}** 的友链申请已合并，稍后将在网站显示。`
               })
               core.info('PR 合并成功')
             } catch (e) {
               await github.rest.issues.createComment({
                 owner, repo, issue_number: pull_number,
-                body: `## ⚠️ 自动合并失败\n\n请联系仓库维护者手动处理。\n\n错误详情：\`${e.message}\``
+                body: `## Error: 自动合并失败\n\n请联系仓库维护者手动处理。\n\n错误详情：\`${e.message}\``
               })
               core.setFailed(`合并失败: ${e.message}`)
             }
